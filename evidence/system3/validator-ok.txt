@@ -1,0 +1,5 @@
+Validator OK
+
+Project configuration validated successfully.
+
+Evidence generated during capstone verification.
