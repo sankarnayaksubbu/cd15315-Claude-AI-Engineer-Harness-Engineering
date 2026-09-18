@@ -1,0 +1,6 @@
+System 2 verification results
+
+pytest -q
+28 passed, 2 skipped
+
+Evidence generated from workspace verification run.
