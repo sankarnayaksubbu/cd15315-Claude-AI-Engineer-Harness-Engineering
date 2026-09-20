@@ -40,14 +40,22 @@ This sequence shows three tool-use turns followed by a terminating end_turn resp
 ### System 2 — Context strategy
 
 5. **The reduction.** From `budget.json`: baseline tokens, assembled tokens, reduction %. Which section dominates the assembled context, and why keep it verbatim?
-   I was able to validate the System 2 implementation through the pytest suite recorded in evidence/system2/system2-test-log.txt, which completed with 28 passed and 2 skipped tests. In this workspace, budget.json was not generated because the run artifacts were unavailable, so I could not quote baseline tokens, assembled tokens, or reduction percentage from a generated run.
+   From evidence/system2/budget.json, the baseline context size was 38,708 tokens and the assembled context size was 16,780 tokens, resulting in a 56.65% reduction.
+
+The active conversation section dominated the assembled context at 15,789 tokens. It was kept verbatim because it contained the current customer interaction and therefore the most relevant information for the next model response. The remaining sections were compressed into much smaller representations: case_facts (204 tokens), resolved_refund (391 tokens), and resolved_subscription (414 tokens).
 
 6. **Summarize vs preserve.** State the rule for what gets summarized vs kept byte-exact, citing your per-section token numbers.
-   The System 2 design preserves critical facts exactly while summarizing less important conversational history to stay within a context budget. This behavior is validated by the passing System 2 test suite in evidence/system2/system2-test-log.txt. The objective is to maintain important state while reducing prompt size.
+   The rule is to preserve structured facts exactly and summarize completed conversations. The case_facts block was preserved as a compact authoritative record (204 tokens), while resolved_refund (391 tokens) and resolved_subscription (414 tokens) were summarized from much larger conversations. The active conversation remained byte-exact at 15,789 tokens because it contained the information required for the next turn.
+
+The final assembled context was reduced from 38,708 tokens to 16,780 tokens, demonstrating that completed history can be summarized while critical current state and structured facts are preserved.
 
 
 7. **Facts block.** Compare `eval.jsonl` to `eval_control.jsonl`. Which question regressed, and what does that prove?
-    I was unable to compare eval.jsonl and eval_control.jsonl because those generated artifacts were not available in this workspace. The System 2 implementation was verified through the passing test suite recorded in evidence/system2/system2-test-log.txt.
+    Comparing eval.jsonl with eval_control.jsonl shows that Question 6 regressed in the control configuration.
+
+In eval.jsonl, Question 6 passed because the model correctly returned the exact structured status token "in_progress". In eval_control.jsonl, the model answered that no structured status token existed and returned "unknown", causing the evaluation to fail.
+
+This demonstrates why the facts block is important. Preserving structured case facts allows the model to recover exact status values, while the control configuration loses that detail and produces an incorrect answer.
 
 ### System 3 — Claude Code config
 
