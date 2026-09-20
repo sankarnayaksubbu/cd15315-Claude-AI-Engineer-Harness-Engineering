@@ -129,9 +129,11 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
         "name": "route_to_adjuster",
         "description": (
             "TERMINAL TOOL. Route this claim to the matching adjuster queue. "
-            "Call this exactly once when classification confidence is at least "
-            "0.6 and severity has been assessed. After this, your next response "
-            "should be a brief confirmation and stop with end_turn."
+            "Every claim must end with exactly one terminal action: either "
+            "route_to_adjuster or escalate_to_human. Call this exactly once when "
+            "classification confidence is at least 0.6 and severity has been "
+            "assessed. After this, your next response should be a brief "
+            "confirmation and stop with end_turn."
         ),
         "input_schema": {
             "type": "object",
@@ -148,12 +150,11 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     {
         "name": "escalate_to_human",
         "description": (
-            "TERMINAL TOOL. Escalate this claim to a human reviewer when "
-            "classification confidence is below 0.6 even after clarification, or "
-            "when the claim cannot be routed safely (multiple plausible types, "
-            "missing critical facts the claimant cannot supply, policy disputes). "
-            "Call this exactly once. After this, your next response should be a "
-            "brief confirmation and stop with end_turn."
+            "TERMINAL TOOL. Every claim must end with exactly one terminal action: "
+            "either route_to_adjuster or escalate_to_human. If you are uncertain, "
+            "missing critical facts, or cannot route safely, escalate_to_human is "
+            "the correct terminal action. Call this exactly once. After this, your "
+            "next response should be a brief confirmation and stop with end_turn."
         ),
         "input_schema": {
             "type": "object",
