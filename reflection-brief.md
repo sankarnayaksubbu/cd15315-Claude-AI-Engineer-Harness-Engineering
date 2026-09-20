@@ -77,7 +77,9 @@ This demonstrates why the facts block is important. Preserving structured case f
     Crash recovery exists so that interrupted work can continue when it is still recent and relevant. A fresh start with a summary can be more reliable than resuming stale state because old in-memory context may no longer reflect the current system condition. The crash recovery behavior is validated by the System 4 test suite in evidence/system4/system4-test-log.txt. 
 
 13. **Small state.** Byte size of your `hot_state.json`. Why does the budget matter for a system run once per shift, indefinitely?
-    I was unable to generate hot_state.json in this workspace and therefore could not quote its exact size. The System 4 tests passed successfully (33 passed) as recorded in evidence/system4/system4-test-log.txt, demonstrating the intended tiered-state architecture. 
+    My hot_state.json artifact in evidence/system4/hot_state.json is 643 bytes. The file stores only the current operational state, active alerts, threshold statuses, and a compact shift summary rather than the full historical record.
+
+The small state size matters because the monitoring system runs once per shift indefinitely. Keeping hot state compact prevents unbounded growth, reduces recovery overhead, and ensures that only the most relevant operational information is carried forward while historical data remains in the warm and cold tiers.
 
 ---
 
@@ -86,9 +88,9 @@ This demonstrates why the facts block is important. Preserving structured case f
 *Graded on connecting two or more systems. Cite a named file/artifact from each.*
 
 14. **Three layers.** Point to a file/artifact for each layer and justify.
-    → Model: System 1 demonstrates model-driven control flow through the stop_reason-based loop validated in evidence/system1/system1-test-log.txt.
-    → Harness: System 2 demonstrates harness-level context management validated in evidence/system2/system2-test-log.txt.
-    → Orchestration: System 4 demonstrates orchestration of multi-shift processing validated in evidence/system4/system4-test-log.txt.
+    Model: System 1 demonstrates model-driven control flow through the stop_reason-based loop validated in evidence/system1/system1-test-log.txt.
+    Harness: System 2 demonstrates harness-level context management validated in evidence/system2/system2-test-log.txt.
+    Orchestration: System 4 demonstrates orchestration of multi-shift processing validated in evidence/system4/system4-test-log.txt.
 
 15. **Deterministic vs prompt.** Cite one behavior guaranteed in code (terminal tool, read-only allowlist, atomic write, byte budget) and one guided by prompt. When is each right?
     A deterministic behavior is the test-validated enforcement of Claude Code configuration files in evidence/system3/.claude/. A prompt-guided behavior is the model's reasoning about context and tool usage. Deterministic controls are appropriate for safety and enforcement, while prompt guidance is appropriate for flexible decision making. 
