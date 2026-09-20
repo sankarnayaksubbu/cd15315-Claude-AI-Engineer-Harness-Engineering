@@ -18,7 +18,15 @@ Replace each `→` with your answer. **Every answer cites at least one artifact 
 ### System 1 — Agentic loop
 
 1. **Loop control.** Quote the `stop_reason` sequence from one trace. Name the file and function that decides continue-vs-stop, and how.
-   The agentic loop is controlled by the stop_reason returned from the model. The loop continues when stop_reason indicates tool execution is required and stops when the conversation reaches a terminal response. My evidence for System 1 is in evidence/system1/system1-test-log.txt, where the final pytest run completed successfully with 29 passing tests. The tests validate that the loop dispatches based on stop_reason rather than using a fixed number of iterations.
+   The continue-versus-stop decision is implemented in claims_intake/loop.py in the run() function.
+
+The run() function continues the loop when response.stop_reason == "tool_use" and terminates by returning FinalState when response.stop_reason == "end_turn". Any other stop_reason raises UnexpectedStopReason.
+
+A real stop_reason sequence from the System 1 trace for claim_04 was:
+
+tool_use → tool_use → tool_use → end_turn
+
+This sequence shows three tool-use turns followed by a terminating end_turn response.
 
 2. **Anti-pattern.** Name one anti-pattern `test_antipatterns.py` checks for. What would break in your run if the loop used it?
    One anti-pattern checked by test_antipatterns.py is using a fixed turn count instead of allowing the model to control the loop through stop_reason values. If the loop used a fixed iteration count, the agent could terminate before all required tool calls were completed or continue after a final answer was already produced. The successful result in evidence/system1/system1-test-log.txt (29 passing tests) indicates the reference implementation avoids this anti-pattern.
